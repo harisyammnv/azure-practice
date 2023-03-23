@@ -37,4 +37,15 @@ def main():
     
     # get credentials
     credentials = get_credentials()
+    resource_client = create_resource_client(credentials)
+    adf_client = create_datafactory_client(credentials)
     
+    rg_params = {'location':'westeurope'}
+    df_params = {"location": "westeurope"}
+    
+    # create datafactory
+    df_resource = Factory(location=df_params['location'])
+    df = adf_client.factories.begin_create_or_update(rg_name, df_name, df_resource)
+    while df.provisioning_state != 'Succeeded':
+        time.sleep(1)
+        df = adf_client.factories.get(rg_name, df_name)
